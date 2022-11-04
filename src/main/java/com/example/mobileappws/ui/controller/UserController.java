@@ -6,6 +6,7 @@ import com.example.mobileappws.ui.model.request.UserDetailsRequestModel;
 import com.example.mobileappws.ui.model.responce.UserRest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,12 +26,21 @@ public class UserController {
         return "get all";
     }
 
-    @GetMapping("{id}")
-    public String getUserById(@PathVariable(value = "id") Long id) {
-        return "get by id " + id;
+    @GetMapping(value = "{id}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public UserRest getUserById(@PathVariable String id) {
+        UserRest returnValue = new UserRest();
+
+        UserDto userDto = userService.getUserById(id);
+        BeanUtils.copyProperties(userDto, returnValue);
+
+        return returnValue;
     }
 
-    @PostMapping
+    @PostMapping(
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
         UserRest returnValue = new UserRest();
 
